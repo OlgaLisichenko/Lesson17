@@ -60,17 +60,30 @@ public class Main {
      */
     private static void task2(Scanner scanner) throws IOException {
         System.out.println("__________ Task 2 __________");
-        System.out.println("Enter path");
+        System.out.println("Enter path");          //resources
         String folderPath = scanner.nextLine();
         System.out.println("Enter number of files");
         int numOfFiles = scanner.nextInt();
 
+        Set<Path> filesPaths = getPathSet(folderPath);
+        Map<String, Document> dataMap = getDataMap(numOfFiles, filesPaths);
+        getInformation(filesPaths, dataMap);
+    }
+
+    private static Set<Path> getPathSet(String folderPath) throws IOException {
+        Set<Path> filesPaths;
+        try (Stream<Path> list = Files.list(Paths.get(folderPath))) {
+            filesPaths = list.collect(Collectors.toSet());
+        }
+        return filesPaths;
+    }
+
+    private static Map<String, Document> getDataMap(int numOfFiles, Set<Path> filesPaths) throws IOException {
         String regexEmail = "[a-zA-Z].*@\\w+\\.[a-z]{2,6}";
         String regexPhone = "\\+\\(\\d{2}\\)\\d{7}";
         String regexDocNum = "(\\d{4}-[a-zA-Zа-яА-Я]{3}-){2}\\d[a-zA-Zа-яА-Я]\\d[a-zA-Zа-яА-Я]";
         String regexPath = ".+\\.(txt)";
 
-        Set<Path> filesPaths = getPathSet(folderPath);
         Map<String, Document> dataMap = new HashMap<>();
 
         int counter = 0;
@@ -92,22 +105,13 @@ public class Main {
                     dataMap.put((filePath.getFileName().toString().replaceAll("\\.(txt)", "")), document);
                 }
                 counter++;
-                if (counter == numOfFiles)
-                    break;
+                if (counter == numOfFiles) break;
             }
             System.out.println(dataMap);
         } else {
             System.out.println("There are no files in the folder");
         }
-        getInformation(filesPaths, dataMap);
-    }
-
-    private static Set<Path> getPathSet(String folderPath) throws IOException {
-        Set<Path> filesPaths;
-        try (Stream<Path> list = Files.list(Paths.get(folderPath))) {
-            filesPaths = list.collect(Collectors.toSet());
-        }
-        return filesPaths;
+        return dataMap;
     }
 
     private static void getInformation(Set<Path> filesPaths, Map<String, Document> dataMap) {
