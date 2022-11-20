@@ -67,7 +67,7 @@ public class Main {
 
         Set<Path> filesPaths = getPathSet(folderPath);
         Map<String, Document> dataMap = getDataMap(numOfFiles, filesPaths);
-        getInformation(filesPaths, dataMap);
+        getInformation(filesPaths, dataMap, numOfFiles);
     }
 
     private static Set<Path> getPathSet(String folderPath) throws IOException {
@@ -102,11 +102,16 @@ public class Main {
                             document.setPhone(s);
                         }
                     }
+                    if (counter == numOfFiles) {
+                        System.out.println(counter + " files were processed.");
+                        System.out.println(dataMap);
+                        return dataMap;
+                    }
+                    counter++;
                     dataMap.put((filePath.getFileName().toString().replaceAll("\\.(txt)", "")), document);
                 }
-                counter++;
-                if (counter == numOfFiles) break;
             }
+            System.out.println(counter + " files were processed.");
             System.out.println(dataMap);
         } else {
             System.out.println("There are no files in the folder");
@@ -114,12 +119,13 @@ public class Main {
         return dataMap;
     }
 
-    private static void getInformation(Set<Path> filesPaths, Map<String, Document> dataMap) {
-        int num = filesPaths.size() - dataMap.size();
-        if (num == 0) {
+    private static void getInformation(Set<Path> filesPaths, Map<String, Document> dataMap, int numOfFiles) {
+        if (dataMap.size() == 0 && numOfFiles != 0) {
             System.out.println("All files have the wrong format");
+        } else if (numOfFiles > filesPaths.size()) {
+            System.out.println("There were " + (filesPaths.size() - dataMap.size()) + " documents of an invalid format");
         } else {
-            System.out.println(dataMap.size() + " files were processed. There were " + num + " documents of an invalid format");
+            System.out.println("There were " + (numOfFiles - dataMap.size()) + " documents of an invalid format");
         }
     }
 }
